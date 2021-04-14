@@ -18,9 +18,6 @@ function SetupCommonEnvironment {
             New-Item -ItemType Directory -Force -Path $path | Out-Null
         }
     }
-
-    # Hide "You are in 'detached HEAD' state" message
-    git config --global advice.detachedHead false
 }
 
 function InstallPhpSdk {
