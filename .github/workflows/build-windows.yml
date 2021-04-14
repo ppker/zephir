@@ -2,8 +2,6 @@ name: Windows CI
 
 on:
   push:
-    branches:
-      - development
     paths-ignore:
       - '**.md'
       - '**.txt'
@@ -35,7 +33,6 @@ jobs:
         php-versions: ['7.4', '8.0']
         arch: x64
         thread-safety: nts
-#        build_type: nts
 
         include:
           - php-versions: '7.4'
