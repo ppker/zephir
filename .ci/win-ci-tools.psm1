@@ -56,14 +56,14 @@ function InstallPhpDevPack {
 
     Write-Output "Install PHP Dev pack: ${env:PHP_VERSION}"
 
-    $TS = Get-ThreadSafety
+    $ThreadSafety = Get-ThreadSafety
 
     $BaseUrl = "http://windows.php.net/downloads/releases"
-    $DevPack = "php-devel-pack-${env:PHP_VERSION}${TS}-Win32-vc${env:VC_VERSION}-${env:PHP_ARCH}.zip"
+    $DevPack = "php-devel-pack-${env:PHP_VERSION}${ThreadSafety}-${env:BUILD_TYPE}-${env:VC_VERSION}-${env:PHP_ARCH}.zip"
 
     $RemoteUrl = "${BaseUrl}/${DevPack}"
     $RemoteArchiveUrl = "${BaseUrl}/archives/${DevPack}"
-    $DestinationPath = "C:\Downloads\php-devel-pack-${env:PHP_VERSION}${TS}-VC${env:VC_VERSION}-${env:PHP_ARCH}.zip"
+    $DestinationPath = "C:\Downloads\php-devel-pack-${env:PHP_VERSION}${ThreadSafety}-${env:BUILD_TYPE}-${env:VC_VERSION}-${env:PHP_ARCH}.zip"
 
     if (-not (Test-Path $env:PHP_DEVPACK)) {
         if (-not [System.IO.File]::Exists($DestinationPath)) {
@@ -73,7 +73,7 @@ function InstallPhpDevPack {
                 -Message "Downloading PHP Dev pack"
         }
 
-        $DestinationUnzipPath = "${env:Temp}\php-${env:PHP_VERSION}-devel-VC${env:VC_VERSION}-${env:PHP_ARCH}"
+        $DestinationUnzipPath = "${env:Temp}\php-${env:PHP_VERSION}-devel-${env:VC_VERSION}-${env:PHP_ARCH}"
 
         if (-not (Test-Path "$DestinationUnzipPath")) {
             Expand-Item7zip $DestinationPath $env:Temp
@@ -90,12 +90,12 @@ function InstallZephirParser {
     #>
 
     $BaseUri = "https://github.com/phalcon/php-zephir-parser/releases/download"
-    $LocalPart = "zephir_parser_${env:PHP_ARCH}_vc${env:VC_VERSION}_php${env:PHP_MINOR}"
+    $LocalPart = "zephir_parser_${env:PHP_ARCH}_${env:VC_VERSION}_php${env:PHP_MINOR}"
 
-    $TS = Get-ThreadSafety
+    $ThreadSafety = Get-ThreadSafety
 
-    $RemoteUrl = "${BaseUri}/v${env:PARSER_VERSION}/${LocalPart}${TS}_${env:PARSER_VERSION}-${env:PARSER_RELEASE}.zip"
-    $DestinationPath = "C:\Downloads\${LocalPart}${TS}_${env:PARSER_VERSION}-${env:PARSER_RELEASE}.zip"
+    $RemoteUrl = "${BaseUri}/v${env:PARSER_VERSION}/${LocalPart}${ThreadSafety}_${env:PARSER_VERSION}-${env:PARSER_RELEASE}.zip"
+    $DestinationPath = "C:\Downloads\${LocalPart}${ThreadSafety}_${env:PARSER_VERSION}-${env:PARSER_RELEASE}.zip"
 
     if (-not (Test-Path "${env:PHPROOT}\ext\php_zephir_parser.dll")) {
         if (-not [System.IO.File]::Exists($DestinationPath)) {
@@ -110,10 +110,10 @@ function InstallZephirParser {
 function Get-ThreadSafety {
     <#
         .SYNOPSIS
-            Detects if Build is Thread Safety or not and returns `ts` suffix.
+            Detects if Build is Thread Safety or not and returns `-nts` or empty string as suffix.
     #>
 
-    if ($env:BUILD_TYPE -Match "nts") {
+    if ($env:PHP_THREAD_SAFETY -Match "nts") {
         return "-nts"
     }
 
