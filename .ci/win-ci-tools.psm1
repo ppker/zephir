@@ -329,24 +329,24 @@ function InitializeReleaseVars {
             Configures Environment variables for Release build.
     #>
 
-    if ($env:BUILD_TYPE -Match "nts") {
-        $env:RELEASE_ZIPBALL = "${env:PACKAGE_PREFIX}_${env:PHP_ARCH}_vc${env:VC_VERSION}_php${env:PHP_MINOR}_nts"
+    # Default prefixes for x86 arch and thead-safety
+    # Skip prefixes rule:
+    #   `ts`  - prefix for thread-safety
+    #   `x86` - prefix for 32-bit architecture
+    $ThreadSafetyPrefix = [string]::Empty
+    $ArchPrefix = [string]::Empty
+    $env:RELEASE_FOLDER = "Release_TS"
 
-        if ($env:PHP_ARCH -eq 'x86') {
-            $env:RELEASE_FOLDER = "Release"
-        } else {
-            $env:RELEASE_FOLDER = "x64\Release"
-        }
-    } else {
-        $env:RELEASE_ZIPBALL = "${env:PACKAGE_PREFIX}_${env:PHP_ARCH}_vc${env:VC_VERSION}_php${env:PHP_MINOR}"
-
-        if ($env:PHP_ARCH -eq 'x86') {
-            $env:RELEASE_FOLDER = "Release_TS"
-        } else {
-            $env:RELEASE_FOLDER = "x64\Release_TS"
-        }
+    if ($env:PHP_THREAD_SAFETY -Match "nts") {
+        $ThreadSafetyPrefix = "_nts"
+        $env:RELEASE_FOLDER = "Release"
     }
 
+    if ($env:PHP_ARCH -eq 'x64') {
+        $env:RELEASE_FOLDER = "x64\${env:RELEASE_FOLDER}"
+    }
+
+    $env:RELEASE_ZIPBALL = "${env:PACKAGE_PREFIX}_${env:PHP_ARCH}_${env:VC_VERSION}_php${env:PHP_MINOR}${ThreadSafetyPrefix}"
     $env:RELEASE_DLL_PATH = "${env:GITHUB_WORKSPACE}\ext\${env:RELEASE_FOLDER}\${env:EXTENSION_FILE}"
 
     Write-Output "RELEASE_ZIPBALL=${env:RELEASE_ZIPBALL}" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
