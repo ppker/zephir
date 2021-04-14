@@ -47,6 +47,12 @@ jobs:
           #  build_type: nts
 
     steps:
+      - name: Configure Git for Windows
+        run: |
+          # Hide "You are in 'detached HEAD' state" message
+          git config --global advice.detachedHead false
+          git config --global core.autocrlf false
+
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
