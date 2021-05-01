@@ -94,7 +94,7 @@ jobs:
           path: C:\Downloads
           key: ${{ runner.os }}-downloads-${{ hashFiles('**/.github/workflows/build-windows.yml') }}
           restore-keys: |
-            ${{ runner.os }}-downloads-${{ env.cache-name }}-
+            ${{ runner.os }}-downloads-${{ matrix.php-versions }}-
             ${{ runner.os }}-downloads-
             ${{ runner.os }}
 
