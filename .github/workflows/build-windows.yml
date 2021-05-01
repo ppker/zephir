@@ -194,6 +194,8 @@ jobs:
         shell: cmd
         run: |
           cd ext
+          phpize
+          configure --enable-stub
           nmake 2> "%GITHUB_WORKSPACE%\compile-errors.log" 1> "%GITHUB_WORKSPACE%\compile.log"
 
       - name: Inspecting Stub Extension DLL File
@@ -219,13 +221,24 @@ jobs:
         if: always()
         run: vendor/bin/phpunit --colors=always --testsuite Zephir
 
-      - name: After Failure
+      - name: Upload build artifacts after Failure
         if: failure()
-        run: |
-          Import-Module .\.ci\win-ci-tools.psm1
-          PrintLogs
-          PrintEnvVars
-          PrintDirectoriesContent
+        uses: actions/upload-artifact@v2
+        with:
+          name: tools
+          path: |
+            "%GITHUB_WORKSPACE%\compile-errors.log"
+            "%GITHUB_WORKSPACE%\compile.log"
+            D:\a\zephir\zephir\ext\
+          retention-days: 1
+
+      # - name: After Failure
+      #   if: failure()
+      #   run: |
+      #     Import-Module .\.ci\win-ci-tools.psm1
+      #     PrintLogs
+      #     PrintEnvVars
+      #     PrintDirectoriesContent
 
       - name: After Success
         if: success()
