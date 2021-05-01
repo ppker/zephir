@@ -178,7 +178,7 @@ jobs:
           # .\zephir.bat stubs
           # .\zephir.bat api
 
-      - name: Compile Stub Project
+      - name: Generate Stub Project
         run: |
           .\zephir.bat generate
           .\zephir.bat compile `
@@ -190,12 +190,25 @@ jobs:
             -Wnot-supported-magic-constant `
             -Wnon-valid-decrement
 
+      - name: Phpize Stub Extension
+        shell: cmd
+        run: |
+          set PATH=%PATH%;%PHP_DEVPACK%
+          cd ext
+          phpize
+
+      - name: Configure Stub Extension
+        shell: cmd
+        run: |
+          set PATH=%PATH%;%PHP_DEVPACK%
+          cd ext
+          configure --enable-stub
+
       - name: Make Stub Extension
         shell: cmd
         run: |
+          set PATH=%PATH%;%PHP_DEVPACK%
           cd ext
-          phpize
-          configure --enable-stub
           nmake 2> "%GITHUB_WORKSPACE%\compile-errors.log" 1> "%GITHUB_WORKSPACE%\compile.log"
 
       - name: Inspecting Stub Extension DLL File
@@ -225,11 +238,12 @@ jobs:
         if: failure()
         uses: actions/upload-artifact@v2
         with:
-          name: tools
+          name: logs-${{ matrix.php-versions }}
           path: |
-            "%GITHUB_WORKSPACE%\compile-errors.log"
-            "%GITHUB_WORKSPACE%\compile.log"
+            D:\a\zephir\zephir\compile-errors.log"
+            D:\a\zephir\zephir\compile.log"
             D:\a\zephir\zephir\ext\
+            !D:\a\zephir\zephir\ext\x64\
           retention-days: 1
 
       # - name: After Failure
