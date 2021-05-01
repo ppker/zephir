@@ -226,8 +226,7 @@ function PrintLogs {
     #>
 
     $Logs = "${env:GITHUB_WORKSPACE}\compile-errors.log",
-            "${env:GITHUB_WORKSPACE}\compile.log",
-            "${env:GITHUB_WORKSPACE}\ext\configure.js"
+            "${env:GITHUB_WORKSPACE}\compile.log"
 
     foreach ($logFile in $Logs) {
         if (Test-Path -Path $logFile) {

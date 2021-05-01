@@ -236,7 +236,7 @@ jobs:
 
       - name: Upload build artifacts after Failure
         if: failure()
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v1
         with:
           name: logs-${{ matrix.php-versions }}
           path: |
@@ -246,11 +246,11 @@ jobs:
             !D:\a\zephir\zephir\ext\x64\
           retention-days: 1
 
-      # - name: After Failure
-      #   if: failure()
-      #   run: |
-      #     Import-Module .\.ci\win-ci-tools.psm1
-      #     PrintLogs
+      - name: After Failure
+        if: failure()
+        run: |
+          Import-Module .\.ci\win-ci-tools.psm1
+          PrintLogs
       #     PrintEnvVars
       #     PrintDirectoriesContent
 
