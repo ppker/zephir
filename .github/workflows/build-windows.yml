@@ -89,7 +89,7 @@ jobs:
           fetch-depth: 1
 
       - name: Setup Downloads Cache
-        uses: actions/cache@v1
+        uses: actions/cache@v2
         with:
           path: C:\Downloads
           key: ${{ runner.os }}-downloads-${{ hashFiles('**/.github/workflows/build-windows.yml') }}
@@ -142,25 +142,23 @@ jobs:
           $v = "${env:WindowsSDKLibVersion}" -replace '\\$', ''
           Write-Output "WindowsSDKLibVersion=$v" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
 
+      - name: Setup Composer Token
+        run: |
+          # To increase the Composer rate limit we're use GitHub authentication
+          if ("${{ secrets.COMPOSER_TOKEN }}" -ne "") {
+              composer config github-oauth.github.com ${{ secrets.COMPOSER_TOKEN }}
+          }
+
       - name: Get Composer Cache Directory
         id: composer-cache
         run: echo "::set-output name=dir::$(composer config cache-files-dir)"
 
       - name: Setup Composer Cache
-        uses: actions/cache@v1
+        uses: actions/cache@v2
         with:
           path: ${{ steps.composer-cache.outputs.dir }}
           key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.json') }}
-          restore-keys: |
-            ${{ runner.os }}-composer-
-
-      - name: Setup GitHub Token
-        shell: bash
-        run: |
-          # To increase the GitHub rate limit we're use GitHub authentication
-          if [ ! -z '${{ secrets.COMPOSER_TOKEN }}' ]; then
-            composer config github-oauth.github.com ${{ secrets.COMPOSER_TOKEN }}
-          fi
+          restore-keys: ${{ runner.os }}-composer-
 
       - name: Install Project Dependencies
         run: composer install --prefer-dist --no-interaction --no-ansi --no-progress --no-suggest
