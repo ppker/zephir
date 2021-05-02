@@ -142,13 +142,6 @@ jobs:
           $v = "${env:WindowsSDKLibVersion}" -replace '\\$', ''
           Write-Output "WindowsSDKLibVersion=$v" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
 
-      - name: Setup Composer Token
-        run: |
-          # To increase the Composer rate limit we're use GitHub authentication
-          if ("${{ secrets.COMPOSER_TOKEN }}" -ne "") {
-              composer config github-oauth.github.com ${{ secrets.COMPOSER_TOKEN }}
-          }
-
       - name: Get Composer Cache Directory
         id: composer-cache
         run: echo "::set-output name=dir::$(composer config cache-files-dir)"
@@ -160,8 +153,15 @@ jobs:
           key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.json') }}
           restore-keys: ${{ runner.os }}-composer-
 
+      - name: Setup Composer Token
+        run: |
+          # To increase the Composer rate limit we're use GitHub authentication
+          if ("${{ secrets.COMPOSER_TOKEN }}" -ne "") {
+              composer config github-oauth.github.com ${{ secrets.COMPOSER_TOKEN }}
+          }
+
       - name: Install Project Dependencies
-        run: composer install --prefer-dist --no-interaction --no-ansi --no-progress --no-suggest
+        run: composer install --prefer-source --no-interaction --no-ansi --no-progress
 
       - name: Initialize Release Variables
         run: |
@@ -240,10 +240,10 @@ jobs:
         with:
           name: logs-${{ matrix.php-versions }}
           path: |
-            D:\a\zephir\zephir\compile-errors.log"
-            D:\a\zephir\zephir\compile.log"
-            D:\a\zephir\zephir\ext\
-            !D:\a\zephir\zephir\ext\x64\
+            ${{ github.workspace }}\compile-errors.log"
+            ${{ github.workspace }}\compile.log"
+            ${{ github.workspace }}\ext\
+            !${{ github.workspace }}\ext\x64\
           retention-days: 1
 
       - name: After Failure
