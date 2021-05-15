@@ -169,14 +169,13 @@ jobs:
           InitializeReleaseVars
 
       - name: Fast Commands Test
-        # TODO(klay): Enable all commands
         run: |
           .\zephir.bat --help
-          # .\zephir.bat clean
-          # .\zephir.bat fullclean
-          # .\zephir.bat generate
-          # .\zephir.bat stubs
-          # .\zephir.bat api
+          .\zephir.bat clean
+          .\zephir.bat fullclean
+          .\zephir.bat generate
+          .\zephir.bat stubs
+          .\zephir.bat api
 
       - name: Generate Stub Project
         run: |
@@ -189,6 +188,12 @@ jobs:
             -Wunreachable-code `
             -Wnot-supported-magic-constant `
             -Wnon-valid-decrement
+
+      - name: Build Zephir
+        run: |
+          .\zephir.bat clean
+          .\zephir.bat generate
+          .\zephir.bat compile
 
       - name: Phpize Stub Extension
         shell: cmd
